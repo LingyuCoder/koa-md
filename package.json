@@ -1,0 +1,22 @@
+{
+  "name": "koa-md",
+  "version": "0.0.1",
+  "description": "A middleware to change markdown to html with code highlight",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "koa",
+    "markdown",
+    "middleware"
+  ],
+  "author": "skyinlayer",
+  "license": "MIT",
+  "dependencies": {
+    "entities": "^1.1.1",
+    "highlight.js": "^8.1.0",
+    "jsdom": "^0.11.1",
+    "markdown": "^0.5.0"
+  }
+}
