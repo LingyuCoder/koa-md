@@ -11,7 +11,11 @@
     "markdown",
     "middleware"
   ],
-  "author": "skyinlayer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LingyuCoder/koa-md"
+  },
+  "author": "LingyuCoder",
   "license": "MIT",
   "dependencies": {
     "entities": "^1.1.1",

@@ -1,0 +1,102 @@
+html {
+	background: #eee;
+}
+body, #panel, #raw {
+	background: #fff;
+	border: 1px solid #ddd;
+}
+#panel {
+	position: fixed;
+	left: 0;
+	top: 0;
+	margin-left: .5em;
+	padding: 1.5em;
+	width: 11em;
+	max-height: 420px;
+	-webkit-transform: translateY(-90%);
+	-moz-transform: translateY(-90%);
+	-ms-transform: translateY(-90%);
+	-o-transform: translateY(-90%);
+	transform: translateY(-90%);
+	-webkit-transition: all .5s ease-out;
+	-moz-transition: all .5s ease-out;
+	-ms-transition: all .5s ease-out;
+	-o-transition: all .5s ease-out;
+	transition: all .5s ease-out;
+	cursor: pointer;
+	overflow: auto;
+}
+#panel:hover {
+	-webkit-transform: translateY(-1em);
+	-moz-transform: translateY(-1em);
+	-ms-transform: translateY(-1em);
+	-o-transform: translateY(-1em);
+	transform: translateY(-1em);
+}
+#panel ul {
+	padding-left: 1em;
+}
+#raw {
+	position: fixed;
+	bottom: 2em;
+	right: 2em;
+	padding: .5em 1em;
+}
+body {
+	width: 90%;
+	max-width: 960px;
+	margin: 3em auto;
+	padding: 3em 2em;
+}
+i.serif {
+	text-transform: lowercase;
+	color: #1abc9c;
+}
+:-moz-any(h1, h2, h3, h4, h5, h5) i.serif {
+	text-transform: capitalize;
+}
+i.serif:hover {
+	color: inherit;
+}
+#wrapper {
+	padding: 5% 10%;
+	position: relative;
+}
+#tagline {
+	color: #999;
+	font-size: 1em;
+	margin: -2em 0 2em;
+	padding-bottom: 2em;
+	border-bottom: 3px double #eee;
+}
+#fork {
+	position: fixed;
+	top: 0;
+	right: 0;
+	_position: absolute;
+}
+#table {
+	margin-bottom: 2em;
+	color: #888;
+}
+#github {
+	position: absolute;
+	top: 1em;
+}
+#github iframe {
+	display: inline;
+	margin-right: 1em;
+}
+@media only screen and (max-width:640px) {
+	table {
+		word-break: break-all;
+		word-wrap: break-word;
+		font-size: 12px;
+	}
+	.typo table th, .typo table td, .typo-table th, .typo-table td .typo table caption {
+		padding: 0.5em;
+	}
+	#fork {
+		display: none;
+	}
+}
