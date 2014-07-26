@@ -9,29 +9,42 @@ var PATH = require('path');
 var r_md_post = /(.md)|(.markdown)|(.mdown)$/;
 var r_deal = /(.+)\.(.+)/;
 
+var slice = Array.prototype.slice;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
 hljs.configure({
 	tabReplace: '    '
 })
 
+var realPath = ffs.realpathSync('.');
+
+var defaultConfig = {
+	highlight: true,
+	highlightStyle: "github"
+	path: [],
+	index: PATH.join(realPath, "README.md"),
+	customCSS: [PATH.join(realPath, "assets/typo.css")],
+	fullHTML: false
+};
+
+
 module.exports = function(opts) {
-	var path = opts.path;
-	var indexFile = opts.index;
-	var style = opts.style || 'github';
-	var preTpl = '<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8"> <title>Document</title> <link rel="stylesheet" href="/css/' + style + '.css" /><link rel="stylesheet" href="/css/typo.css" /><link rel="stylesheet" href="/css/style.css" /></head> <body>';
-	var postTpl = '</body> </html>';
+	var config = mix({}, defaultConfig, opts);
 	return function * (next) {
 		var res = this;
 		var file = res.path;
 		var raw = res.query.raw;
 		var hasFile = true;
+		var fullHTML = config.fullHTML;
+		var preTpl = fullHTML ? createHeader() : "";
 		var ret;
-		if (path && (!r_deal.test(file) || r_md_post.test(file))) {
-			res.body = preTpl;;
+		if (r_md_post.test(file)) {
+
+			res.body += preTpl;
+
 			addIndexPanel(res, path);
 
-			if (!r_md_post.test(file) && !(file = getIndexFile(file, indexFile))) {
-				this.body += '<article class="typo"><div>文件未找到</div></article>';
-			} else {
+			if (r_md_post.test(file)) {
 				ret = yield readFile(file);
 				if (!raw) {
 					ret = markdown.toHTML(ret.toString());
@@ -40,49 +53,48 @@ module.exports = function(opts) {
 				} else {
 					this.body = ret;
 				}
-
+				res.body += postTpl;
+				res.set('Last-Modified', (new Date).toUTCString());
+				res.set('Cache-Control', 'max-age=0');
+				res.set('Content-Type', 'text/' + (raw ? 'plain' : 'html') + ' ; charset=utf-8');
 			}
-			res.body += postTpl;
-			res.set('Last-Modified', (new Date).toUTCString());
-			res.set('Cache-Control', 'max-age=0');
-			res.set('Content-Type', 'text/' + (raw ? 'plain':'html') + ' ; charset=utf-8');
+
 		}
 		yield next;
 	};
 };
 
-function getIndexFile(category, indexFile) {
-	if (category === '/' && !indexFile) {
-		return "node_modules/koa-md/readme.md";
-	} else {
-		return indexFile;
+function createHeader(file, cssFiles) {
+	var tpl = '<!DOCTYPE html> <html> <head> <meta charset="UTF-8"> <title>' + file + '</title>';
+	for (var css in cssFiles) {
+		tpl += '<link rel="stylesheet" href="' + cssFile + '" />';
 	}
-	var postTest = ['markdown', 'mdown', 'md'];
-	var i;
-	for (i = postTest.length; i--;) {
-		var path = PATH.join(category, "/index." + postTest[i]);
-		if (fs.existsSync(path)) {
-			return path;
-		}
-	}
-	return;
+	tpl += '</head><body>';
+}
+
+function createFooter() {
+	return '</body></html>';
 }
 
 function addIndexPanel(res, path) {
+	var result = "";
 	path = toArray(path);
-	res.body += '<div id="panel">';
+	result += '<div id="panel">';
 	path.forEach(function(p) {
 		var dir = p.dir || "";
 		var label = p.label || p.dir;
 		var fileList = walk(dir, "");
-		res.body += '<p><a href="' + dir + '">' + label + '</a></p>';
-		res.body += '<ul>';
+		result += '<p><a href="' + PATH.join(dir, "index.md") + '">' + label + '</a></p>';
+		result += '<ul>';
 		fileList.forEach(function(file) {
-			res.body += '<li><a href="' + PATH.join(dir, file) + '">' + file + '</a></li>';
+			if(file !== "index.md") {
+				result += '<li><a href="' + PATH.join(dir, file) + '">' + file + '</a></li>';	
+			}
 		});
-		res.body += '</ul>';
+		result += '</ul>';
 	});
-	res.body += '</div>'
+	result += '</div>'
+	return result;
 }
 
 function readFile(path) {
@@ -124,6 +136,18 @@ function walk(path, base) {
 		}
 	});
 	return list;
+}
+
+function mix(dest) {
+	var srcs = slice.call(arguments, 1);
+	srcs.forEach(function(src) {
+		for (var item in src) {
+			if (hasOwnProperty.call(src, item)) {
+				dest[item] = src[item];
+			}
+		}
+	});
+	return dest;
 }
 
 function toArray(obj) {
