@@ -39,25 +39,22 @@ module.exports = function(opts) {
 		var preTpl = fullHTML ? createHeader() : "";
 		var ret;
 		if (r_md_post.test(file)) {
-
-			res.body += preTpl;
-
-			addIndexPanel(res, path);
-
-			if (r_md_post.test(file)) {
-				ret = yield readFile(file);
-				if (!raw) {
-					ret = markdown.toHTML(ret.toString());
-					this.body += '<article class="typo">' + highlight(ret) + '</article>';
-					this.body += '<a id="raw" href="' + file + '?raw=true">查看源码</a>';
-				} else {
-					this.body = ret;
+			ret = yield readFile(file);
+			if (!raw) {
+				if (fullHTML) {
+					res.body += createHeader(file, config.customCSS);
+					res.body += addIndexPanel(path);
 				}
-				res.body += postTpl;
-				res.set('Last-Modified', (new Date).toUTCString());
-				res.set('Cache-Control', 'max-age=0');
-				res.set('Content-Type', 'text/' + (raw ? 'plain' : 'html') + ' ; charset=utf-8');
+				ret = markdown.toHTML(ret.toString());
+				res.body += '<article class="typo">' + highlight(ret) + '</article>';
+				res.body += '<a id="raw" href="' + file + '?raw=true">查看源码</a>';
+			} else {
+				res.body = ret;
 			}
+			res.body += postTpl;
+			res.set('Last-Modified', (new Date).toUTCString());
+			res.set('Cache-Control', 'max-age=0');
+			res.set('Content-Type', 'text/' + (raw ? 'plain' : 'html') + ' ; charset=utf-8');
 
 		}
 		yield next;
@@ -87,8 +84,8 @@ function addIndexPanel(res, path) {
 		result += '<p><a href="' + PATH.join(dir, "index.md") + '">' + label + '</a></p>';
 		result += '<ul>';
 		fileList.forEach(function(file) {
-			if(file !== "index.md") {
-				result += '<li><a href="' + PATH.join(dir, file) + '">' + file + '</a></li>';	
+			if (file !== "index.md") {
+				result += '<li><a href="' + PATH.join(dir, file) + '">' + file + '</a></li>';
 			}
 		});
 		result += '</ul>';
