@@ -27,8 +27,7 @@ var hasOwnProperty = Object.prototype.hasOwnProperty;
 
 hljs.configure({
 	tabReplace: '    '
-})
-
+});
 
 module.exports = function(opts) {
 	var config = mix({}, defaultConfig, opts);
@@ -109,12 +108,12 @@ function addIndexPanel(path) {
 		var dir = p.dir || "";
 		var label = p.label || p.dir;
 		var fileList = walk(dir, "");
-		if(fs.existsSync(PATH.join(dir, "index.md"))){
-			result += '<p><a href="' + PATH.join(dir, "index.md") + '">' + label + '</a></p>';	
+		if (fs.existsSync(PATH.join(dir, "index.md"))) {
+			result += '<p><a href="' + PATH.join(dir, "index.md") + '">' + label + '</a></p>';
 		} else {
 			result += '<p>' + label + '</p>';
 		}
-		
+
 		result += '<ul>';
 		fileList.forEach(function(file) {
 			if (file !== "index.md") {
