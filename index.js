@@ -22,6 +22,9 @@ var defaultConfig = {
 	contentOnly: true
 };
 
+var slice = Array.prototype.slice;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
 hljs.configure({
 	tabReplace: '    '
 })
